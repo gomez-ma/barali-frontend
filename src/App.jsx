@@ -157,7 +157,7 @@ function App() {
 // console.log(output);
 
 // Optional chaining  (?.) เป็นเครื่องมือที่ช่วยให้เราสามารถเข้าถึงคุณสมบัติ (properties) หรือเรียกใช้งานฟังก์ชันในอ็อบเจกต์ที่อาจไม่มีตัวตน อยู่ได้อย่างปลอดภัย โดยไม่ต้องเช็กด้วย if ซ้ำ ๆ
-let data = { user: {name: "Alice"} };
+// let data = { user: {name: "Alice"} };
 
 // if(data.user && data.user.name){
 //   console.log(data.user.name);
