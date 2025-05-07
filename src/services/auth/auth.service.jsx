@@ -11,8 +11,19 @@ const login = (email, password) => {
     });
 }
 
+const getCurrentUser = () => {
+    const user = localStorage.getItem("user");
+    return user? JSON.parse(user) : null;
+}
+
+const logout = () => {
+    localStorage.removeItem("user");
+}
+
 const AuthService = {
     login,
+    logout,
+    getCurrentUser
 }
 
 export default AuthService;
