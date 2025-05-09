@@ -3,21 +3,21 @@ import AccommodationService from "../../services/api/accommodation/accommodation
 import AccommodationCard from "./AccommodationCard";
 import { Spinner } from "react-bootstrap";
 
-const Accommodation = () => {
-    const [accommodations, setAccommodations] = useState([]);
+const Promotion = () => {
+    const [promotions, setPromotions] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetchAccommodations();
+        fetchPromotions();
     }, []);
 
-    const fetchAccommodations = async () => {
+    const fetchPromotions = async () => {
         try {
             setLoading(true);
-            const res = await AccommodationService.getAll();
-            setAccommodations(res?.data || []);
+            const res = await AccommodationService.getPromotion();
+            setPromotions(res?.data || []);
         } catch (error) {
-            console.error("Error fetching accommodations:", error);
+            console.error("Error fetching promotions:", error);
         } finally {
             setLoading(false);
         }
@@ -33,20 +33,20 @@ const Accommodation = () => {
                 <>
                     <div>
                         <h3 className="fw-bold mb-4">
-                            <span className="border-bottom border-3 border-primary pb-1">ที่พักยอดนิยม</span>
+                            <span className="border-bottom border-3 border-primary pb-1">โปรโมชั่นพิเศษ</span>
                         </h3>
                     </div>
-                    {accommodations.length > 0 ? (
-                        accommodations.map((acc) => (
+                    {promotions.length > 0 ? (
+                        promotions.map((promotion) => (
                             <AccommodationCard
-                                key={acc.id}
-                                accommodation={acc}
+                                key={promotion.id}
+                                accommodation={promotion}
                             />
                         ))
                     ) : (
                         <div className="text-center col-12">
                             <p className="text-danger">
-                                ไม่สามารถโหลดข้อมูลห้องพักได้
+                                ไม่สามารถโหลดข้อมูลโปรโมชั่นได้
                             </p>
                         </div>
                     )}
@@ -56,4 +56,4 @@ const Accommodation = () => {
     );
 };
 
-export default Accommodation;
+export default Promotion;

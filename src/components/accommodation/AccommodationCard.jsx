@@ -28,7 +28,7 @@ const AccommodationCard = ({ accommodation }) => {
                 <Col md={7}>
                     <h5>
                         {accommodation.name}
-                        <small className="text-muted"> ({accommodation.room_type})</small>
+                        <small className="text-muted"> ({accommodation.type.name})</small>
                     </h5>
                     <p className="mb-1">ห้องว่าง : {accommodation.total_rooms} {accommodation.room_type}</p>
 
@@ -50,10 +50,14 @@ const AccommodationCard = ({ accommodation }) => {
                                 </span>
                             </>
                         )}
-                        <span className="h5 text-danger fw-bold">
+                        <span
+                            className={`h5 fw-bold ${discountPercent ? "text-danger" : "text-success"
+                                }`}
+                        >
                             {discountedPrice.toLocaleString()} บาท
                         </span>
                     </div>
+
                     <small className="text-muted">รวมค่าธรรมเนียมและภาษีแล้ว</small>
 
                     {/* ปุ่ม */}
