@@ -40,7 +40,7 @@ const MainNavbar = ({ isUser, logOut }) => {
                         {isUser ? (
                             <div className="d-flex align-items-center gap-3">
                                 <Navbar.Text className="text-light">
-                                    Signed in as: <span className="fw-bold">{isUser.name} {isUser.lastname}</span>
+                                    <span className="fw-bold">{isUser.name} {isUser.lastname}</span>
                                 </Navbar.Text>
                                 <Button 
                                     variant="outline-light" 
