@@ -4,8 +4,8 @@ import AccommodationCard from "./AccommodationCard";
 import { Spinner } from "react-bootstrap";
 
 const Accommodation = () => {
-    const [accommodations, setAccomodations] = useState([]);
-    const [loading, setLoading] = useState(false);
+    const [accommodations, setAccommodations] = useState([]); // แก้ไขชื่อ state function
+    const [loading, setLoading] = useState(true); // เริ่มต้นเป็น true เพื่อแสดง loading ทันที
 
     useEffect(() => {
         fetchAccommodations();
@@ -15,9 +15,9 @@ const Accommodation = () => {
         try {
             setLoading(true);
             const res = await AccommodationService.getAll();
-            setAccomodations(res?.data || []);
+            setAccommodations(res?.data || []); // แก้ไขชื่อ function ให้ถูกต้อง
         } catch (error) {
-            console.log("Error fetching accommodations", error);
+            console.error("Error fetching accommodations:", error); // ใช้ console.error แทน console.log
         } finally {
             setLoading(false);
         }
@@ -31,6 +31,11 @@ const Accommodation = () => {
                 </div>
             ) : (
                 <>
+                    <div>
+                        <h3 className="fw-bold mb-4">
+                            <span className="border-bottom border-3 border-primary pb-1">ที่พักแนะนำ</span>
+                        </h3>
+                    </div>
                     {accommodations.length > 0 ? (
                         accommodations.map((acc) => (
                             <AccommodationCard
@@ -48,6 +53,7 @@ const Accommodation = () => {
                 </>
             )}
         </div>
-    )
-}
-export default Accommodation
+    );
+};
+
+export default Accommodation;
