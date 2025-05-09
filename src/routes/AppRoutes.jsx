@@ -4,7 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom"
 // Layouts
 import MainLayout from "../layouts/main/MainLayout"
 import AdminLayout from "../layouts/admin/AdminLayout"
-import AuthLayout from "../layouts/auth/AuthLaout"
+import AuthLayout from "../layouts/auth/AuthLayout"
 
 // Main Routes
 import HomePage from "../pages/main/home/HomePage"

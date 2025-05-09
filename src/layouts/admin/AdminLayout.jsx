@@ -1,6 +1,6 @@
 import Navbar from "./Navbar";
 import ProtectedRoute from "../../middleware/ProtectedRoute";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/Auth";
 import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {

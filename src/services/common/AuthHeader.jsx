@@ -1,5 +1,4 @@
-// useAuthHeader.jsx
-
+// AuthHeader.jsx
 const AuthHeader = () => {
   const isUser = JSON.parse(localStorage.getItem("user"));
 
