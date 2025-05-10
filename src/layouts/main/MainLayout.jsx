@@ -1,9 +1,9 @@
 import Navbar from "../common/Navbar";
 import { Outlet } from "react-router-dom";
-import { useAuth } from "../../hooks/Auth";
+import { UseAuth } from "../../hooks/UseAuth";
 
 const MainLayout = () => {
-    const { isUser, logOut } = useAuth();
+    const { isUser, logOut } = UseAuth();
     return (
         <>
             <Navbar isUser={isUser} logOut={logOut} />

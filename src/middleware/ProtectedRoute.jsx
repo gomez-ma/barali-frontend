@@ -1,9 +1,9 @@
 import React from "react";
-import { useAuth } from "../hooks/Auth";
+import { UseAuth } from "../hooks/UseAuth";
 import { Navigate } from "react-router-dom";
 
 const ProtectedRoute = ({children, roles}) => {
-    const { isUser } = useAuth();
+    const { isUser } = UseAuth();
 
     if(!isUser) return <Navigate to="/" replace />
 

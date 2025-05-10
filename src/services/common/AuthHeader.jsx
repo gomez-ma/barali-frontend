@@ -1,6 +1,8 @@
 // AuthHeader.jsx
+import AuthService from "../auth/auth.service";
+
 const AuthHeader = () => {
-  const isUser = JSON.parse(localStorage.getItem("user"));
+  const isUser = AuthService.getCurrentUser();
 
   if (isUser && isUser.accessToken) {
     // return {
