@@ -9,9 +9,7 @@ const AdminLayout = () => {
     return (
         <ProtectedRoute roles={["ROLE_ADMIN", "ROLE_MODERATOR"]}>
             <Navbar isUser={isUser} logOut={logOut} />
-            <main className="container">
-                <Outlet />
-            </main>
+            <Outlet />
         </ProtectedRoute>
     )
 }

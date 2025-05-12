@@ -24,18 +24,13 @@ const Accommodation = () => {
     };
 
     return (
-        <div className="row p-3">
+        <div className="row">
             {loading ? (
                 <div className="text-center my-5">
                     <Spinner animation="border" variant="primary" />
                 </div>
             ) : (
                 <>
-                    <div>
-                        <h3 className="fw-bold mb-4">
-                            <span className="border-bottom border-3 border-primary pb-1">ที่พักยอดนิยม</span>
-                        </h3>
-                    </div>
                     {accommodations.length > 0 ? (
                         accommodations.map((acc) => (
                             <AccommodationCard

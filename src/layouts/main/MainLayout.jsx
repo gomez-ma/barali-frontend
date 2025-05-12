@@ -8,9 +8,7 @@ const MainLayout = () => {
     return (
         <>
             <Navbar isUser={isUser} logOut={logOut} />
-            <main className="container">
-                <Outlet />
-            </main>
+            <Outlet />
             <Footer />
         </>
     )

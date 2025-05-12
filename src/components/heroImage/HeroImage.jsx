@@ -9,7 +9,7 @@ const HeroImage = () => {
     };
 
     return (
-        <Carousel style={{ marginTop: '10px' }} interval={3000} pause={false} touch={true} keyboard={true}>
+        <Carousel fade interval={3000} pause={false} touch={true} keyboard={true}>
             <Carousel.Item>
                 <img
                     className="d-block w-100"

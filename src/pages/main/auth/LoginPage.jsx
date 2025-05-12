@@ -22,6 +22,8 @@ const LoginPage = () => {
       newErrors.email = 'กรุณากรอกอีเมล';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
       newErrors.email = 'รูปแบบอีเมลไม่ถูกต้อง';
+    } else if (/[ก-๙]/.test(email)) {
+      newErrors.email = 'อีเมลต้องไม่ประกอบด้วยอักษรภาษาไทย';
     }
 
     if (!password) {
@@ -33,7 +35,7 @@ const LoginPage = () => {
     if (Object.keys(newErrors).length === 0) {
       setIsLoading(true);
       setLoginError('');
-      
+
       try {
         const user = await AuthService.login(email, password);
         if (user) {
@@ -46,7 +48,7 @@ const LoginPage = () => {
               successToast.classList.remove('show');
             }, 3000);
           }
-          
+
           // รอสักครู่ก่อนที่จะ navigate
           setTimeout(() => {
             navigate("/", { replace: true });
@@ -73,7 +75,7 @@ const LoginPage = () => {
           <div className="card border-0">
             <div className="card-body p-4 p-md-5">
               <h2 className="fw-bold mb-4 text-center">เข้าสู่ระบบ</h2>
-              
+
               {loginError && (
                 <div className="alert alert-danger alert-dismissible fade show" role="alert">
                   <i className="bi bi-exclamation-triangle-fill me-2"></i>
@@ -81,7 +83,7 @@ const LoginPage = () => {
                   <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close" onClick={() => setLoginError('')}></button>
                 </div>
               )}
-              
+
               <form onSubmit={handleSubmit} noValidate>
                 <div className="mb-4">
                   <label htmlFor="email" className="form-label">
@@ -111,9 +113,9 @@ const LoginPage = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <button 
-                      className="btn btn-outline-secondary" 
-                      type="button" 
+                    <button
+                      className="btn btn-outline-secondary"
+                      type="button"
                       onClick={toggleShowPassword}
                     >
                       <i className={`bi ${showPassword ? 'bi-eye-slash-fill' : 'bi-eye-fill'}`}></i>
@@ -130,9 +132,9 @@ const LoginPage = () => {
                   <a href="#" className="text-decoration-none">ลืมรหัสผ่าน?</a>
                 </div>
 
-                <button 
-                  type="submit" 
-                  className="btn btn-primary btn-lg w-100 mb-3" 
+                <button
+                  type="submit"
+                  className="btn btn-primary btn-lg w-100 mb-3"
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -147,7 +149,7 @@ const LoginPage = () => {
                     </>
                   )}
                 </button>
-                
+
                 <div className="text-center mt-3">
                   <p>ยังไม่มีบัญชี? <a href="/register" className="text-decoration-none">สมัครสมาชิก</a></p>
                 </div>
@@ -156,7 +158,7 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-      
+
       {/* Success Toast */}
       <div className="position-fixed bottom-0 end-0 p-3" style={{ zIndex: 11 }}>
         <div id="successToast" className="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">

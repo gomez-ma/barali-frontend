@@ -114,18 +114,13 @@ const Activity = () => {
     };
 
     return (
-        <div className="row p-3">
+        <div className="row">
             {loading ? (
                 <div className="text-center my-5">
                     <Spinner animation="border" variant="primary" />
                 </div>
             ) : (
                 <>
-                    <div className="text-center">
-                        <h3 className="fw-bold mb-4">
-                            <span className="border-bottom border-3 border-primary pb-1">เพลิดเพลินกับกิจกรรมชายหาดของเรา</span>
-                        </h3>
-                    </div>
                     <div className="position-relative my-4">
                         <div className="container-fluid px-0">
                             <Row className="mx-0">
