@@ -1,19 +1,19 @@
 import { Carousel } from 'react-bootstrap';
 
 const HeroImage = () => {
-    // const BASE_URL = import.meta.env.VITE_BASE_URL;
-    // const fullImageUrl = `${BASE_URL}/uploads/sliders/`;
+    const BASE_URL = import.meta.env.VITE_BASE_URL;
+    const fullImageUrl = `${BASE_URL}/uploads/heroimages/`;
     const imageStyle = {
         height: '50vh',
         objectFit: 'cover'
     };
 
     return (
-        <Carousel interval={3000} pause={false} touch={true} keyboard={true}>
+        <Carousel style={{ marginTop: '10px' }} interval={3000} pause={false} touch={true} keyboard={true}>
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://picsum.photos/id/1/1000/1200"
+                    src={`${fullImageUrl}12-2500x1667.jpg`}
                     alt="ห้องพักหรูริมทะเล"
                     style={imageStyle}
                 />
@@ -26,7 +26,7 @@ const HeroImage = () => {
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://picsum.photos/id/13/1000/1200"
+                    src={`${fullImageUrl}13-2500x1667.jpg`}
                     alt="ห้องสวีทสุดพิเศษ"
                     style={imageStyle}
                 />
@@ -39,7 +39,7 @@ const HeroImage = () => {
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://picsum.photos/id/14/1000/1200"
+                    src={`${fullImageUrl}14-2500x1667.jpg`}
                     alt="ชายหาดส่วนตัว"
                     style={imageStyle}
                 />
@@ -52,7 +52,7 @@ const HeroImage = () => {
             <Carousel.Item>
                 <img
                     className="d-block w-100"
-                    src="https://picsum.photos/id/15/1000/1200"
+                    src={`${fullImageUrl}15-2500x1667.jpg`}
                     alt="สิ่งอำนวยความสะดวกครบครัน"
                     style={imageStyle}
                 />
