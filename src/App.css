@@ -1,42 +1,68 @@
 /* Activity Card */
-.activity-image-wrapper {
-    position: relative;
+
+.activity-card {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+}
+
+.activity-image-container {
+    aspect-ratio: 16 / 9;
     overflow: hidden;
 }
 
 .activity-image {
-    transition: 0.4s ease;
-    display: block;
-    width: 100%;
-    height: auto;
+    object-fit: cover;
+    transition: transform 0.5s ease;
 }
 
-.activity-image-wrapper:hover .activity-image {
-    opacity: 1;
+.activity-card:hover .activity-image {
+    transform: scale(1.05);
 }
 
-.overlay {
-    position: absolute;
+.activity-overlay {
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
     top: 0;
     left: 0;
-    height: 100%;
-    width: 100%;
     opacity: 0;
-    background-color: rgba(0, 0, 0, 0.6);
-    transition: 0.4s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.375rem; /* same as rounded */
+    transition: opacity 0.3s ease;
 }
 
-.activity-image-wrapper:hover .overlay {
+.activity-card:hover .activity-overlay {
     opacity: 1;
 }
 
-.overlay-text {
-    color: white;
-    font-size: 1.1rem;
-    font-weight: bold;
-    text-align: center;
+.activity-title {
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+}
+
+.activity-modal .modal-body {
+    padding: 0;
+}
+
+.activity-modal.modal {
+  z-index: 1080;
+}
+
+.activity-modal .modal-dialog {
+  max-width: 800px;
+  margin: auto;
+}
+
+.activity-modal .modal-content {
+  background-color: transparent; /* ไม่จำเป็นถ้าใช้ div ภายในแทน */
+  border: none;
+  box-shadow: none;
+  padding: 0;
+}
+
+.activity-modal .btn-close {
+  z-index: 3;
+  background-color: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { Spinner } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
-import ActivityService from "../../services/api/activity/activity.service"
+import ActivityService from "../../services/api/activity/activity.service";
 import ActivityCard from "./activityCard";
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -9,25 +9,43 @@ import Col from 'react-bootstrap/Col';
 const Activity = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [itemsPerView, setItemsPerView] = useState(4);
     const autoPlayIntervalRef = useRef(null);
     const slideSpeed = 5000; // ความเร็วคงที่ 5 วินาที
     
-    const itemsPerView = 4;
     const maxIndex = Math.max(0, activities.length - itemsPerView);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 576) {
+                setItemsPerView(1);
+            } else if (window.innerWidth < 768) {
+                setItemsPerView(2);
+            } else if (window.innerWidth < 992) {
+                setItemsPerView(3);
+            } else {
+                setItemsPerView(4);
+            }
+        };
+
+        handleResize(); // Set initial value
+        window.addEventListener('resize', handleResize);
+        
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     useEffect(() => {
         fetchActivities();
         return () => {
-            // Cleanup เมื่อ component unmount
             if (autoPlayIntervalRef.current) {
                 clearInterval(autoPlayIntervalRef.current);
             }
         };
     }, []);
 
-    // ฟังก์ชันสำหรับ auto slide
     const startAutoPlay = useCallback(() => {
         if (autoPlayIntervalRef.current) {
             clearInterval(autoPlayIntervalRef.current);
@@ -35,7 +53,6 @@ const Activity = () => {
         
         autoPlayIntervalRef.current = setInterval(() => {
             setCurrentIndex(prevIndex => {
-                // วน loop เมื่อถึงสไลด์สุดท้าย
                 if (prevIndex >= maxIndex) {
                     return 0;
                 }
@@ -44,7 +61,6 @@ const Activity = () => {
         }, slideSpeed);
     }, [maxIndex]);
 
-    // เริ่ม auto play เมื่อ component mount หรือ activities เปลี่ยนแปลง
     useEffect(() => {
         if (activities.length > 0) {
             startAutoPlay();
@@ -70,7 +86,6 @@ const Activity = () => {
     };
 
     const nextSlide = () => {
-        // หยุด auto play ชั่วคราวเมื่อกดปุ่มเอง
         if (autoPlayIntervalRef.current) {
             clearInterval(autoPlayIntervalRef.current);
         }
@@ -78,16 +93,13 @@ const Activity = () => {
         if (currentIndex < maxIndex) {
             setCurrentIndex(currentIndex + 1);
         } else {
-            // วนกลับไปสไลด์แรกเมื่อกดปุ่ม next ที่สไลด์สุดท้าย
             setCurrentIndex(0);
         }
         
-        // เริ่ม auto play ใหม่หลังจากกดปุ่ม
         setTimeout(startAutoPlay, 2000);
     };
 
     const prevSlide = () => {
-        // หยุด auto play ชั่วคราวเมื่อกดปุ่มเอง
         if (autoPlayIntervalRef.current) {
             clearInterval(autoPlayIntervalRef.current);
         }
@@ -95,11 +107,9 @@ const Activity = () => {
         if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
         } else {
-            // วนกลับไปสไลด์สุดท้ายเมื่อกดปุ่ม prev ที่สไลด์แรก
             setCurrentIndex(maxIndex);
         }
         
-        // เริ่ม auto play ใหม่หลังจากกดปุ่ม
         setTimeout(startAutoPlay, 2000);
     };
 
@@ -120,7 +130,6 @@ const Activity = () => {
                         <div className="container-fluid px-0">
                             <Row className="mx-0">
                                 <Col xs={12} className="px-0">
-                                    {/* Swiper Container */}
                                     <div className="overflow-hidden position-relative">
                                         <Row
                                             className="flex-nowrap transition-transform"
@@ -130,7 +139,16 @@ const Activity = () => {
                                             }}
                                         >
                                             {activities.map((activity) => (
-                                                <ActivityCard key={activity.id} activity={activity} />
+                                                <Col 
+                                                    key={activity.id} 
+                                                    xs={12 / 1} 
+                                                    sm={12 / 2} 
+                                                    md={12 / 3} 
+                                                    lg={12 / 4}
+                                                    className="px-2"
+                                                >
+                                                    <ActivityCard activity={activity} />
+                                                </Col>
                                             ))}
                                         </Row>
                                     </div>
@@ -138,53 +156,50 @@ const Activity = () => {
                             </Row>
                         </div>
 
-                        {/* Navigation Buttons */}
-                        <button
-                            onClick={prevSlide}
-                            className="position-absolute top-50 start-0 translate-middle-y bg-white p-2 rounded-circle shadow border-0 ms-2"
-                            style={{
-                                zIndex: 10,
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <ChevronLeft size={24} />
-                        </button>
-
-                        <button
-                            onClick={nextSlide}
-                            className="position-absolute top-50 end-0 translate-middle-y bg-white p-2 rounded-circle shadow border-0 me-2"
-                            style={{
-                                zIndex: 10,
-                                cursor: 'pointer'
-                            }}
-                        >
-                            <ChevronRight size={24} />
-                        </button>
-
-                        {/* Pagination Dots */}
-                        {/* <div className="d-flex justify-content-center mt-3">
-                            {Array.from({ length: maxIndex + 1 }).map((_, index) => (
+                        {/* Navigation Buttons - Hide on small screens when showing only 1 item */}
+                        {itemsPerView > 1 && (
+                            <>
                                 <button
-                                    key={index}
-                                    className="mx-1 border-0 p-0"
+                                    onClick={prevSlide}
+                                    className="position-absolute top-50 start-0 translate-middle-y bg-white p-2 rounded-circle shadow border-0 ms-2 d-none d-sm-block"
                                     style={{
-                                        height: '8px',
-                                        width: '8px',
-                                        borderRadius: '50%',
-                                        backgroundColor: index === currentIndex ? '#0d6efd' : '#dee2e6'
+                                        zIndex: 10,
+                                        cursor: 'pointer'
                                     }}
-                                    onClick={() => {
-                                        setCurrentIndex(index);
-                                        // หยุด auto play ชั่วคราวเมื่อกดเลือกสไลด์เอง
-                                        if (autoPlayIntervalRef.current) {
-                                            clearInterval(autoPlayIntervalRef.current);
-                                        }
-                                        // เริ่ม auto play ใหม่หลังจากเลือกสไลด์
-                                        setTimeout(startAutoPlay, 2000);
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+
+                                <button
+                                    onClick={nextSlide}
+                                    className="position-absolute top-50 end-0 translate-middle-y bg-white p-2 rounded-circle shadow border-0 me-2 d-none d-sm-block"
+                                    style={{
+                                        zIndex: 10,
+                                        cursor: 'pointer'
                                     }}
-                                />
-                            ))}
-                        </div> */}
+                                >
+                                    <ChevronRight size={24} />
+                                </button>
+                            </>
+                        )}
+
+                        {/* Mobile navigation buttons */}
+                        {itemsPerView === 1 && (
+                            <div className="d-flex justify-content-center mt-3 gap-3">
+                                <button
+                                    onClick={prevSlide}
+                                    className="bg-white p-2 rounded-circle shadow border-0"
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+                                <button
+                                    onClick={nextSlide}
+                                    className="bg-white p-2 rounded-circle shadow border-0"
+                                >
+                                    <ChevronRight size={24} />
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </>
             )}

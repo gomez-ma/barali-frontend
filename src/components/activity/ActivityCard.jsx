@@ -1,83 +1,70 @@
 import { useState } from 'react';
-import Row from 'react-bootstrap/Row';
-import Col from 'react-bootstrap/Col';
-import Modal from 'react-bootstrap/Modal';
-import { X } from 'react-bootstrap-icons';
-
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import { Modal } from 'react-bootstrap';
 
 const ActivityCard = ({ activity }) => {
-    const [showOverlay, setShowOverlay] = useState(false);
-    const fullImageUrl = `${BASE_URL}/uploads/activities/${activity.image_name}`;
-    
-    const handleImageClick = () => {
-        setShowOverlay(true);
-    };
-    
-    const handleClose = () => {
-        setShowOverlay(false);
-    };
-    
+    const [showModal, setShowModal] = useState(false);
+
+    const imageUrl = `${import.meta.env.VITE_BASE_URL}/uploads/activities/${activity.image_name}`;
+
+    const title = activity.name || "กิจกรรม";
+
+    const handleCardClick = () => setShowModal(true);
+    const handleCloseModal = () => setShowModal(false);
+
     return (
         <>
-            <div className="col-lg-3 px-2 py-2">
-                <div className="border rounded p-2 shadow-sm h-100">
-                    <Row>
-                        <Col md={12}>
-                            <div 
-                                className="activity-image-wrapper position-relative" 
-                                onClick={handleImageClick}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                <img 
-                                    src={fullImageUrl} 
-                                    alt={activity.name} 
-                                    className="img-fluid rounded activity-image" 
-                                />
-                                <div className="overlay">
-                                    <div className="overlay-text">{activity.name}</div>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </div>
-            </div>
-            
-            {/* Image Overlay Modal */}
-            <Modal 
-                show={showOverlay} 
-                onHide={handleClose} 
-                centered 
-                size="lg"
-                contentClassName="bg-transparent border-0"
+            <button
+                className="activity-card h-100 d-flex flex-column border rounded overflow-hidden shadow-sm text-start p-0 bg-white w-100"
+                onClick={handleCardClick}
+                aria-label={`${title}`}
+                style={{ cursor: "pointer" }}
             >
-                <div className="position-relative">
-                    <button
-                        onClick={handleClose}
-                        className="position-absolute top-0 end-0 bg-dark bg-opacity-50 text-white border-0 rounded-circle d-flex justify-content-center align-items-center p-2 m-2"
-                        style={{ zIndex: 1050, width: '40px', height: '40px' }}
-                    >
-                        <X size={24} />
-                    </button>
-                    
-                    <Modal.Body className="p-0">
-                        <div className="text-center">
-                            <img 
-                                src={fullImageUrl} 
-                                alt={activity.name} 
-                                className="img-fluid rounded shadow-lg"
-                                style={{ maxHeight: '80vh' }}
-                            />
-                            <div className="bg-dark bg-opacity-75 text-white py-2 px-3 rounded-bottom">
-                                <h5 className="mb-0">{activity.name}</h5>
-                                {activity.description && (
-                                    <p className="mb-0 mt-1 small">{activity.description}</p>
-                                )}
-                            </div>
+                <div className="activity-image-container position-relative">
+                    <img
+                        src={imageUrl}
+                        alt={title}
+                        className="activity-image img-fluid w-100 object-fit-cover"
+                        style={{ height: "200px" }}
+                    />
+                    <div className="activity-overlay position-absolute w-100 h-100 d-flex align-items-end top-0 start-0">
+                        <div className="overlay-content w-100 p-3 bg-dark bg-opacity-50">
+                            <h5 className="activity-title mb-0 text-white">{title}</h5>
                         </div>
-                    </Modal.Body>
+                    </div>
+                </div>
+            </button>
+
+            <Modal
+                show={showModal}
+                onHide={handleCloseModal}
+                centered
+                size="lg"
+                dialogClassName="activity-modal"
+                aria-labelledby="activity-modal-title"
+            >
+                <div className="position-relative bg-white rounded shadow overflow-hidden">
+                    {/* ปุ่มปิด */}
+                    <button
+                        onClick={handleCloseModal}
+                        className="btn btn-close position-absolute top-0 end-0 m-2 z-3"
+                        aria-label="Close"
+                    />
+
+                    {/* รูปภาพ */}
+                    <img
+                        src={imageUrl}
+                        alt={title}
+                        className="w-100 img-fluid"
+                        style={{ objectFit: 'cover', maxHeight: '70vh' }}
+                    />
+
+                    {/* ข้อความใต้รูป */}
+                    <div className="p-3 text-center bg-white">
+                        <h4 id="activity-modal-title" className="mb-2">{title}</h4>
+                    </div>
                 </div>
             </Modal>
+
         </>
     );
 };
