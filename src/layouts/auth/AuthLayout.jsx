@@ -1,4 +1,5 @@
 import Navbar from "../common/Navbar";
+import Footer from "../common/Footer";
 import ProtectedRoute from "../../middleware/ProtectedRoute";
 import { UseAuth } from "../../hooks/UseAuth";
 import { Outlet } from "react-router-dom";
@@ -12,6 +13,7 @@ const AuthLayout = () => {
             <main className="container">
                 <Outlet />
             </main>
+            <Footer />
         </ProtectedRoute>
     )
 }
