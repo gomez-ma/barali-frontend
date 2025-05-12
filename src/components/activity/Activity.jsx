@@ -32,7 +32,7 @@ const Activity = () => {
                 </div>
             ) : (
                 <>
-                    <div>
+                    <div className="text-center">
                         <h3 className="fw-bold mb-4">
                             <span className="border-bottom border-3 border-primary pb-1">เพลิดเพลินกับกิจกรรมชายหาดของเรา</span>
                         </h3>

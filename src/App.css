@@ -1,0 +1,42 @@
+/* Activity Card */
+.activity-image-wrapper {
+    position: relative;
+    overflow: hidden;
+}
+
+.activity-image {
+    transition: 0.4s ease;
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.activity-image-wrapper:hover .activity-image {
+    opacity: 1;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    transition: 0.4s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.375rem; /* same as rounded */
+}
+
+.activity-image-wrapper:hover .overlay {
+    opacity: 1;
+}
+
+.overlay-text {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+}
