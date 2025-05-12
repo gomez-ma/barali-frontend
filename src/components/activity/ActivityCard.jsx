@@ -5,35 +5,52 @@ const ActivityCard = ({ activity }) => {
     const [showModal, setShowModal] = useState(false);
 
     const imageUrl = `${import.meta.env.VITE_BASE_URL}/uploads/activities/${activity.image_name}`;
-
     const title = activity.name || "กิจกรรม";
+    // const description = activity.description || ""; // Added description support
 
     const handleCardClick = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
 
     return (
         <>
-            <button
-                className="activity-card h-100 d-flex flex-column border rounded overflow-hidden shadow-sm text-start p-0 bg-white w-100"
-                onClick={handleCardClick}
-                aria-label={`${title}`}
-                style={{ cursor: "pointer" }}
-            >
-                <div className="activity-image-container position-relative">
-                    <img
-                        src={imageUrl}
-                        alt={title}
-                        className="activity-image img-fluid w-100 object-fit-cover"
-                        style={{ height: "200px" }}
-                    />
-                    <div className="activity-overlay position-absolute w-100 h-100 d-flex align-items-end top-0 start-0">
-                        <div className="overlay-content w-100 p-3 bg-dark bg-opacity-50">
-                            <h5 className="activity-title mb-0 text-white">{title}</h5>
+            {/* Card Component */}
+            <div className="activity-card-wrapper h-100">
+                <button
+                    className="activity-card h-100 d-flex flex-column border rounded overflow-hidden shadow-sm text-start p-0 bg-white w-100"
+                    onClick={handleCardClick}
+                    aria-label={`View details of ${title}`}
+                    style={{ 
+                        cursor: "pointer",
+                        transition: "transform 0.2s ease",
+                        border: "none"
+                    }}
+                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                >
+                    <div className="activity-image-container position-relative" style={{ height: "200px" }}>
+                        <img
+                            src={imageUrl}
+                            alt={title}
+                            className="activity-image img-fluid w-100 h-100 object-fit-cover"
+                            loading="lazy" // Added lazy loading
+                        />
+                        <div className="activity-overlay position-absolute w-100 h-100 d-flex align-items-end top-0 start-0">
+                            <div className="overlay-content w-100 p-3 bg-dark bg-opacity-50">
+                                <h5 className="activity-title mb-0 text-white text-truncate">{title}</h5>
+                                {/* {description && (
+                                    <p className="mb-0 text-white-50 small d-none d-md-block">
+                                        {description.length > 60 
+                                            ? `${description.substring(0, 60)}...` 
+                                            : description}
+                                    </p>
+                                )} */}
+                            </div>
                         </div>
                     </div>
-                </div>
-            </button>
+                </button>
+            </div>
 
+            {/* Modal Component */}
             <Modal
                 show={showModal}
                 onHide={handleCloseModal}
@@ -41,30 +58,59 @@ const ActivityCard = ({ activity }) => {
                 size="lg"
                 dialogClassName="activity-modal"
                 aria-labelledby="activity-modal-title"
+                backdrop="static" // Added backdrop static to prevent closing when clicking outside
             >
-                <div className="position-relative bg-white rounded shadow overflow-hidden">
-                    {/* ปุ่มปิด */}
-                    <button
-                        onClick={handleCloseModal}
-                        className="btn btn-close position-absolute top-0 end-0 m-2 z-3"
-                        aria-label="Close"
-                    />
+                <Modal.Body className="p-0">
+                    <div className="position-relative bg-white rounded shadow overflow-hidden">
+                        {/* Close Button */}
+                        <button
+                            onClick={handleCloseModal}
+                            className="btn btn-close position-absolute top-0 end-0 m-2 z-3 bg-white rounded-circle p-2"
+                            aria-label="Close"
+                            style={{
+                                opacity: 1,
+                                boxShadow: "0 0 5px rgba(0,0,0,0.3)"
+                            }}
+                        />
 
-                    {/* รูปภาพ */}
-                    <img
-                        src={imageUrl}
-                        alt={title}
-                        className="w-100 img-fluid"
-                        style={{ objectFit: 'cover', maxHeight: '70vh' }}
-                    />
+                        {/* Image */}
+                        <img
+                            src={imageUrl}
+                            alt={title}
+                            className="w-100 img-fluid"
+                            style={{ 
+                                objectFit: 'cover', 
+                                maxHeight: '60vh',
+                                width: '100%'
+                            }}
+                        />
 
-                    {/* ข้อความใต้รูป */}
-                    <div className="p-3 text-center bg-white">
-                        <h4 id="activity-modal-title" className="mb-2">{title}</h4>
+                        {/* Content */}
+                        <div className="p-4">
+                            <h4 
+                                id="activity-modal-title" 
+                                className="mb-3 text-center fw-bold"
+                                style={{ color: "#333" }}
+                            >
+                                {title}
+                            </h4>
+{/*                             
+                            {description && (
+                                <div className="activity-description mt-3">
+                                    <p className="mb-0" style={{ lineHeight: 1.6 }}>
+                                        {description.split('\n').map((paragraph, i) => (
+                                            <span key={i}>
+                                                {paragraph}
+                                                <br/>
+                                            </span>
+                                        ))}
+                                    </p>
+                                </div>
+                            )} */}
+                        </div>
                     </div>
-                </div>
+                </Modal.Body>
             </Modal>
-
         </>
     );
 };

@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { Spinner } from "react-bootstrap";
+import { Spinner, ButtonGroup, Button } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "react-bootstrap-icons";
 import ActivityService from "../../services/api/activity/activity.service";
 import ActivityCard from "./activityCard";
@@ -10,26 +10,26 @@ const Activity = () => {
     const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [itemsPerView, setItemsPerView] = useState(4);
+    const [itemsPerView, setItemsPerView] = useState(3); // Default to 3 items
     const autoPlayIntervalRef = useRef(null);
-    const slideSpeed = 5000; // ความเร็วคงที่ 5 วินาที
+    const slideSpeed = 5000;
     
     const maxIndex = Math.max(0, activities.length - itemsPerView);
 
     useEffect(() => {
         const handleResize = () => {
+            // Always respect the user's choice between 3 or 4 items on larger screens
             if (window.innerWidth < 576) {
                 setItemsPerView(1);
             } else if (window.innerWidth < 768) {
                 setItemsPerView(2);
-            } else if (window.innerWidth < 992) {
-                setItemsPerView(3);
             } else {
-                setItemsPerView(4);
+                // On larger screens, keep the selected itemsPerView (3 or 4)
+                setItemsPerView(prev => prev === 1 || prev === 2 ? 3 : prev);
             }
         };
 
-        handleResize(); // Set initial value
+        handleResize();
         window.addEventListener('resize', handleResize);
         
         return () => {
@@ -136,10 +136,10 @@ const Activity = () => {
                                             {activities.map((activity) => (
                                                 <Col 
                                                     key={activity.id} 
-                                                    xs={12 / 1} 
-                                                    sm={12 / 2} 
-                                                    md={12 / 3} 
-                                                    lg={12 / 4}
+                                                    xs={12} 
+                                                    sm={6} 
+                                                    md={4} 
+                                                    lg={12 / itemsPerView}
                                                     className="px-2"
                                                 >
                                                     <ActivityCard activity={activity} />
@@ -151,7 +151,7 @@ const Activity = () => {
                             </Row>
                         </div>
 
-                        {/* Navigation Buttons - Hide on small screens when showing only 1 item */}
+                        {/* Navigation Buttons */}
                         {itemsPerView > 1 && (
                             <>
                                 <button
