@@ -4,7 +4,7 @@ const HeroImage = () => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;
     const fullImageUrl = `${BASE_URL}/uploads/heroimages/`;
     const imageStyle = {
-        height: '50vh',
+        height: '60vh',
         objectFit: 'cover'
     };
 
