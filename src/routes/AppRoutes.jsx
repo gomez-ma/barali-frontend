@@ -9,6 +9,7 @@ import AuthLayout from "../layouts/auth/AuthLayout"
 // Main Routes
 import HomePage from "../pages/main/home/HomePage"
 import LoginPage from "../pages/main/auth/LoginPage"
+import SearchPage from "../pages/main/search/SearchPage"
 
 // Auth Routes
 import MyBookingPage from "../pages/auth/MyBookingPage"
@@ -23,6 +24,7 @@ const AppRoutes = () => {
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="login" element={<LoginPage />} />
+        <Route path="search-results" element={<SearchPage />} />
       </Route>
 
       {/* Auth Protected Routes */}

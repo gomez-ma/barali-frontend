@@ -1,4 +1,4 @@
-import Accommodation from "../../../components/accommodation/Accommodation";
+import Popular from "../../../components/accommodation/Popular";
 import Promotion from "../../../components/accommodation/Promotion";
 import Activity from "../../../components/activity/Activity"; // แก้ชื่อไฟล์ให้ตรง
 import HeroImage from "../../../components/heroImage/HeroImage";
@@ -13,7 +13,7 @@ const HomePage = () => {
       {/* กล่องค้นหา */}
       <div
         className="position-absolute w-100 search-box-wrapper"
-        style={{ bottom: "20%", left: 0, zIndex: 10 }}
+        style={{ bottom: "25%", left: 0, zIndex: 10 }}
       >
         <div className="container">
           <SearchBox />
@@ -21,11 +21,11 @@ const HomePage = () => {
       </div>
 
       {/* รายการที่พักยอดนิยม */}
-      <section className="container mb-4" style={{ marginTop: "7rem" }}>
+      <section className="container mt-5 mb-4">
         <h3 className="fw-bold">
           <span className="border-bottom border-3 border-primary">ที่พักยอดนิยม</span>
         </h3>
-        <Accommodation />
+        <Popular />
       </section>
 
       {/* โปรโมชัน */}

@@ -17,7 +17,7 @@ const LoginPage = () => {
     e.preventDefault();
     let newErrors = {};
 
-    // ตรวจสอบข้อมูล
+    // ตรวจสอบอีเมล
     if (!email) {
       newErrors.email = 'กรุณากรอกอีเมล';
     } else if (!/\S+@\S+\.\S+/.test(email)) {
