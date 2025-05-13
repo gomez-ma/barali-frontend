@@ -1,27 +1,45 @@
+import { useEffect, useState } from "react";
 import Popular from "../../../components/accommodation/Popular";
 import Promotion from "../../../components/accommodation/Promotion";
-import Activity from "../../../components/activity/Activity"; // แก้ชื่อไฟล์ให้ตรง
+import Activity from "../../../components/activity/Activity";
 import HeroImage from "../../../components/heroImage/HeroImage";
 import SearchBox from "../../../components/search/SearchBox";
 
 const HomePage = () => {
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
+
+  useEffect(() => {
+    const handleResize = () => setIsDesktop(window.innerWidth >= 768);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <>
-      {/* ภาพ */}
+      {/* ภาพ Hero */}
       <HeroImage />
 
       {/* กล่องค้นหา */}
-      <div
-        className="position-absolute w-100 search-box-wrapper"
-        style={{ bottom: "25%", left: 0, zIndex: 10 }}
-      >
-        <div className="container">
+      {isDesktop ? (
+        <div
+          className="position-absolute w-100 search-box-wrapper"
+          style={{ bottom: "8%", left: 0, zIndex: 10 }}
+        >
+          <div className="container">
+            <SearchBox />
+          </div>
+        </div>
+      ) : (
+        <div className="container my-3">
           <SearchBox />
         </div>
-      </div>
+      )}
 
       {/* รายการที่พักยอดนิยม */}
-      <section className="container mt-5 mb-4">
+      <section
+        className="container mb-4"
+        style={{ marginTop: isDesktop ? "13rem" : "2rem" }}
+      >
         <h3 className="fw-bold">
           <span className="border-bottom border-3 border-primary">ที่พักยอดนิยม</span>
         </h3>
