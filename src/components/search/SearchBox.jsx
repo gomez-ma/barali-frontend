@@ -1,48 +1,68 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InputGroup, FormControl, Form, Row, Col, Button } from 'react-bootstrap';
-import DatePicker from 'react-datepicker';
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
-import "dayjs/locale/th";
+import 'dayjs/locale/th';
 import th from 'date-fns/locale/th';
-import { registerLocale } from 'react-datepicker';
+
 registerLocale('th', th);
 
-const SearchBox = ({
-  initialCheckInDate = null,
-  initialCheckOutDate = null,
-  initialDestination = "",
-}) => {
+const SearchBox = () => {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState(initialDestination);
-  const [checkInDate, setCheckInDate] = useState(initialCheckInDate);
-  const [checkOutDate, setCheckOutDate] = useState(initialCheckOutDate);
+  const [checkInDate, setCheckInDate] = useState(null);
+  const [checkOutDate, setCheckOutDate] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [destination, setDestination] = useState('');
+  const [guests, setGuests] = useState(1);
 
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
 
-  useEffect(() => { }, []);
+  useEffect(() => {
+    const initialCheckIn = dayjs().add(1, 'day').toDate();
+    const initialCheckOut = dayjs().add(2, 'day').toDate();
+    setCheckInDate(initialCheckIn);
+    setCheckOutDate(initialCheckOut);
+  }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
+    // สมมุติว่าใช้ query string สำหรับส่งข้อมูล
+    const params = new URLSearchParams({
+      // destination,
+      // guests,
+      // checkIn: dayjs(checkInDate).format('YYYY-MM-DD'),
+      // checkOut: dayjs(checkOutDate).format('YYYY-MM-DD'),
+    });
     await new Promise((resolve) => setTimeout(resolve, 1000));
-    navigate("/search-results");
+    navigate(`/search-results?${params.toString()}`);
     setLoading(false);
-  }
+  };
 
-  const datepickerCustomInput = ({ value, onClick, placeholder, disabled }) => (
-    <InputGroup className="custom-datepicker">
+  const handleCheckInDateChange = (date) => {
+    setCheckInDate(date);
+    if (!checkOutDate || dayjs(checkOutDate).isSame(date) || dayjs(checkOutDate).isBefore(date)) {
+      const nextDate = dayjs(date).add(1, 'day').toDate();
+      setCheckOutDate(nextDate);
+    }
+  };
+
+  const handleCheckOutDateChange = (date) => {
+    setCheckOutDate(date);
+  };
+
+  const CustomDateInput = ({ value, onClick, placeholder, disabled }) => (
+    <InputGroup className="custom-datepicker" onClick={onClick}>
       <InputGroup.Text className="bg-white border-end-0">
         <i className="bi bi-calendar text-primary"></i>
       </InputGroup.Text>
       <FormControl
         placeholder={placeholder}
         value={value}
-        onClick={onClick}
         readOnly
         disabled={disabled}
         className="py-3 fs-6 border-start-0 shadow-sm"
@@ -55,21 +75,19 @@ const SearchBox = ({
       <Form onSubmit={handleSearch}>
         <Row className="align-items-end g-3">
           <Col xs={12} md={6} lg={4}>
-            <Form.Group className="position-relative">
+            <Form.Group>
               <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
                 จุดหมายปลายทาง
               </Form.Label>
-              <InputGroup className="search-input-group">
+              <InputGroup>
                 <InputGroup.Text className="bg-white border-end-0">
                   <i className="bi bi-search text-muted"></i>
                 </InputGroup.Text>
                 <FormControl
                   type="text"
                   placeholder="ใส่จุดหมายปลายทาง หรือชื่อที่พัก"
-                  aria-label="Search"
-                  value={""}
-                  onChange={""}
-                  onClick={""}
+                  value={destination}
+                  onChange={(e) => setDestination(e.target.value)}
                   className="py-3 fs-6 border-start-0"
                 />
               </InputGroup>
@@ -82,20 +100,17 @@ const SearchBox = ({
                 เช็คอิน
               </Form.Label>
               <DatePicker
-                selected={""}
-                value={""}
-                onChange={""}
+                selected={checkInDate}
+                onChange={handleCheckInDateChange}
                 selectsStart
-                startDate={""}
-                endDate={""}
-                minDate={new Date()}
+                startDate={checkInDate}
+                endDate={checkOutDate}
+                minDate={today}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="เลือกวันที่"
                 locale="th"
-                customInput={datepickerCustomInput({ placeholder: "เลือกวันที่" })}
-                popperContainer={({ children }) => (
-                  <div style={{ zIndex: 2000, position: "relative" }}>{children}</div>
-                )}
+                customInput={<CustomDateInput placeholder="เลือกวันที่" />}
+                popperPlacement="bottom-start"
               />
             </Form.Group>
           </Col>
@@ -106,21 +121,18 @@ const SearchBox = ({
                 เช็คเอาท์
               </Form.Label>
               <DatePicker
-                selected={""}
-                value={""}
-                onChange={""}
+                selected={checkOutDate}
+                onChange={handleCheckOutDateChange}
                 selectsEnd
-                startDate={""}
-                endDate={""}
-                minDate={new Date()}
+                startDate={checkInDate}
+                endDate={checkOutDate}
+                minDate={dayjs(checkInDate).add(1, 'day').toDate()}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="เลือกวันที่"
                 locale="th"
-                disabled={""}
-                customInput={datepickerCustomInput({ placeholder: "เลือกวันที่" })}
-                popperContainer={({ children }) => (
-                  <div style={{ zIndex: 2000, position: "relative" }}>{children}</div>
-                )}
+                disabled={!checkInDate}
+                customInput={<CustomDateInput placeholder="เลือกวันที่" />}
+                popperPlacement="bottom-start"
               />
             </Form.Group>
           </Col>
@@ -134,11 +146,15 @@ const SearchBox = ({
                 <InputGroup.Text className="bg-white border-end-0">
                   <i className="bi bi-person text-muted"></i>
                 </InputGroup.Text>
-                <Form.Select className="py-3 fs-6 border-start-0">
-                  <option>1 ผู้ใหญ่</option>
-                  <option>2 ผู้ใหญ่</option>
-                  <option>3 ผู้ใหญ่</option>
-                  <option>4 ผู้ใหญ่</option>
+                <Form.Select
+                  className="py-3 fs-6 border-start-0"
+                  value={guests}
+                  onChange={(e) => setGuests(parseInt(e.target.value))}
+                >
+                  <option value={1}>1 ผู้ใหญ่</option>
+                  <option value={2}>2 ผู้ใหญ่</option>
+                  <option value={3}>3 ผู้ใหญ่</option>
+                  <option value={4}>4 ผู้ใหญ่</option>
                 </Form.Select>
               </InputGroup>
             </Form.Group>
@@ -148,7 +164,7 @@ const SearchBox = ({
             <Button
               type="submit"
               variant="primary"
-              className="search-btn w-100 d-flex align-items-center justify-content-center gap-2 py-3 fs-6 rounded-3 fw-bold"
+              className="w-100 d-flex align-items-center justify-content-center gap-2 py-3 fs-6 rounded-3 fw-bold"
               disabled={loading}
             >
               {loading ? (
