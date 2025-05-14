@@ -20,7 +20,7 @@ const HomePage = () => {
       <HeroImage />
 
       {/* กล่องค้นหา */}
-      {isDesktop ? (
+      {/* {isDesktop ? (
         <div
           className="position-absolute w-100 search-box-wrapper"
           style={{ bottom: "8%", left: 0, zIndex: 10 }}
@@ -33,12 +33,15 @@ const HomePage = () => {
         <div className="container my-3">
           <SearchBox />
         </div>
-      )}
+      )} */}
+      <div className="container">
+        <SearchBox />
+      </div>
 
       {/* รายการที่พักยอดนิยม */}
       <section
         className="container mb-4"
-        style={{ marginTop: isDesktop ? "13rem" : "2rem" }}
+        style={{ marginTop: isDesktop ? "2rem" : "2rem" }}
       >
         <h3 className="fw-bold">
           <span className="border-bottom border-3 border-primary">ที่พักยอดนิยม</span>
