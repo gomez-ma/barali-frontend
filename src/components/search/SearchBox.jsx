@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { InputGroup, FormControl, Form, Row, Col, Button } from 'react-bootstrap';
 import DatePicker, { registerLocale } from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -11,6 +11,8 @@ registerLocale('th', th);
 
 const SearchBox = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -18,26 +20,40 @@ const SearchBox = () => {
   const [guests, setGuests] = useState(1);
 
   const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);
 
   useEffect(() => {
-    const initialCheckIn = dayjs().add(1, 'day').toDate();
-    const initialCheckOut = dayjs().add(2, 'day').toDate();
-    setCheckInDate(initialCheckIn);
-    setCheckOutDate(initialCheckOut);
-  }, []);
+    const initialDestination = searchParams.get('destination') || '';
+    const initialGuests = parseInt(searchParams.get('guests')) || 1;
+    const initialCheckIn = searchParams.get('checkIn');
+    const initialCheckOut = searchParams.get('checkOut');
+
+    setDestination(initialDestination);
+    setGuests(initialGuests);
+
+    if (initialCheckIn) {
+      setCheckInDate(dayjs(initialCheckIn).toDate());
+    } else {
+      setCheckInDate(dayjs().add(1, 'day').toDate());
+    }
+
+    if (initialCheckOut) {
+      setCheckOutDate(dayjs(initialCheckOut).toDate());
+    } else {
+      setCheckOutDate(dayjs().add(2, 'day').toDate());
+    }
+  }, [searchParams]);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     setLoading(true);
-    // สมมุติว่าใช้ query string สำหรับส่งข้อมูล
+
     const params = new URLSearchParams({
-      // destination,
-      // guests,
-      // checkIn: dayjs(checkInDate).format('YYYY-MM-DD'),
-      // checkOut: dayjs(checkOutDate).format('YYYY-MM-DD'),
+      destination,
+      guests,
+      checkIn: dayjs(checkInDate).format('YYYY-MM-DD'),
+      checkOut: dayjs(checkOutDate).format('YYYY-MM-DD'),
     });
+
     await new Promise((resolve) => setTimeout(resolve, 1000));
     navigate(`/search-results?${params.toString()}`);
     setLoading(false);
