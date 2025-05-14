@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { InputGroup, FormControl, Form, Row, Col, Button } from 'react-bootstrap';
 import DatePicker, { registerLocale } from 'react-datepicker';
+import formatToBE from '../../utils/FormatToBE';
 import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/th';
@@ -9,7 +10,7 @@ import th from 'date-fns/locale/th';
 
 registerLocale('th', th);
 
-const SearchBox = () => {
+const SearchBox = ({resetFilter}) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -71,9 +72,10 @@ const SearchBox = () => {
     setCheckOutDate(date);
   };
 
-  const CustomDateInput = ({ value, onClick, placeholder, disabled }) => (
+  // Create a wrapper component for the check-in date input
+  const CheckInDateInput = ({ value, onClick, placeholder, disabled }) => (
     <InputGroup className="custom-datepicker" onClick={onClick}>
-      <InputGroup.Text className="bg-white border-end-0">
+      <InputGroup.Text className="bg-white border-end-0" id="checkin-date-addon">
         <i className="bi bi-calendar text-primary"></i>
       </InputGroup.Text>
       <FormControl
@@ -82,29 +84,57 @@ const SearchBox = () => {
         readOnly
         disabled={disabled}
         className="py-3 fs-6 border-start-0 shadow-sm"
+        id="checkin-date"
+        name="checkinDate"
+        autoComplete="check-in-date"
+        aria-labelledby="checkin-date-addon"
+      />
+    </InputGroup>
+  );
+
+  // Create a separate wrapper component for the check-out date input
+  const CheckOutDateInput = ({ value, onClick, placeholder, disabled }) => (
+    <InputGroup className="custom-datepicker" onClick={onClick}>
+      <InputGroup.Text className="bg-white border-end-0" id="checkout-date-addon">
+        <i className="bi bi-calendar text-primary"></i>
+      </InputGroup.Text>
+      <FormControl
+        placeholder={placeholder}
+        value={value}
+        readOnly
+        disabled={disabled}
+        className="py-3 fs-6 border-start-0 shadow-sm"
+        id="checkout-date"
+        name="checkoutDate"
+        autoComplete="check-out-date"
+        aria-labelledby="checkout-date-addon"
       />
     </InputGroup>
   );
 
   return (
     <div className="search-container bg-white p-4 rounded-4 shadow-lg mb-4 mt-4">
-      <Form onSubmit={handleSearch}>
+      <Form onSubmit={handleSearch} id="room-search-form" name="roomSearchForm">
         <Row className="align-items-end g-3">
           <Col xs={12} md={6} lg={4}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
-                จุดหมายปลายทาง
+              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="destination">
+                ประเภทห้องพัก
               </Form.Label>
               <InputGroup>
-                <InputGroup.Text className="bg-white border-end-0">
+                <InputGroup.Text className="bg-white border-end-0" id="destination-addon">
                   <i className="bi bi-search text-muted"></i>
                 </InputGroup.Text>
                 <FormControl
                   type="text"
-                  placeholder="ใส่จุดหมายปลายทาง หรือชื่อที่พัก"
+                  placeholder="ใส่ประเภทห้องพัก"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   className="py-3 fs-6 border-start-0"
+                  id="destination"
+                  name="destination"
+                  autoComplete="off"
+                  aria-labelledby="destination-addon"
                 />
               </InputGroup>
             </Form.Group>
@@ -112,7 +142,7 @@ const SearchBox = () => {
 
           <Col xs={12} sm={6} md={3} lg={3}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
+              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="checkin-date">
                 เช็คอิน
               </Form.Label>
               <DatePicker
@@ -125,7 +155,7 @@ const SearchBox = () => {
                 dateFormat="dd/MM/yyyy"
                 placeholderText="เลือกวันที่"
                 locale="th"
-                customInput={<CustomDateInput placeholder="เลือกวันที่" />}
+                customInput={CheckInDateInput({placeholder: formatToBE(checkInDate) || "เลือกวันที่"})}
                 popperPlacement="bottom-start"
               />
             </Form.Group>
@@ -133,7 +163,7 @@ const SearchBox = () => {
 
           <Col xs={12} sm={6} md={3} lg={3}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
+              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="checkout-date">
                 เช็คเอาท์
               </Form.Label>
               <DatePicker
@@ -147,7 +177,7 @@ const SearchBox = () => {
                 placeholderText="เลือกวันที่"
                 locale="th"
                 disabled={!checkInDate}
-                customInput={<CustomDateInput placeholder="เลือกวันที่" />}
+                customInput={CheckOutDateInput({ placeholder: formatToBE(checkOutDate), disabled: !checkInDate })}
                 popperPlacement="bottom-start"
               />
             </Form.Group>
@@ -155,17 +185,20 @@ const SearchBox = () => {
 
           <Col xs={12} md={6} lg={2}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
+              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="guests">
                 ผู้เข้าพัก
               </Form.Label>
               <InputGroup>
-                <InputGroup.Text className="bg-white border-end-0">
+                <InputGroup.Text className="bg-white border-end-0" id="guests-addon">
                   <i className="bi bi-person text-muted"></i>
                 </InputGroup.Text>
                 <Form.Select
                   className="py-3 fs-6 border-start-0"
                   value={guests}
                   onChange={(e) => setGuests(parseInt(e.target.value))}
+                  id="guests"
+                  name="guests"
+                  aria-labelledby="guests-addon"
                 >
                   <option value={1}>1 ผู้ใหญ่</option>
                   <option value={2}>2 ผู้ใหญ่</option>
@@ -182,6 +215,9 @@ const SearchBox = () => {
               variant="primary"
               className="w-100 d-flex align-items-center justify-content-center gap-2 py-3 fs-6 rounded-3 fw-bold"
               disabled={loading}
+              id="search-button"
+              name="searchButton"
+              onClick={resetFilter}
             >
               {loading ? (
                 <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

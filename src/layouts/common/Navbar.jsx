@@ -17,7 +17,7 @@ const MainNavbar = ({ isUser, logOut }) => {
                         height="24"
                         className="d-inline-block align-text-top"
                     />
-                    {' '}BARALI
+                    {' '}Barali Beach Resort
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
