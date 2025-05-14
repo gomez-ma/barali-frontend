@@ -24,14 +24,16 @@ const SearchBox = ({
   const tomorrow = new Date();
   tomorrow.setDate(today.getDate() + 1);
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault();
-    // alert("Search button clicked");
+    setLoading(true);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     navigate("/search-results");
+    setLoading(false);
   }
-  
+
   const datepickerCustomInput = ({ value, onClick, placeholder, disabled }) => (
     <InputGroup className="custom-datepicker">
       <InputGroup.Text className="bg-white border-end-0">
@@ -73,7 +75,7 @@ const SearchBox = ({
               </InputGroup>
             </Form.Group>
           </Col>
-          
+
           <Col xs={12} sm={6} md={3} lg={3}>
             <Form.Group>
               <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
@@ -97,7 +99,7 @@ const SearchBox = ({
               />
             </Form.Group>
           </Col>
-          
+
           <Col xs={12} sm={6} md={3} lg={3}>
             <Form.Group>
               <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
@@ -122,7 +124,7 @@ const SearchBox = ({
               />
             </Form.Group>
           </Col>
-          
+
           <Col xs={12} md={6} lg={2}>
             <Form.Group>
               <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
@@ -141,13 +143,20 @@ const SearchBox = ({
               </InputGroup>
             </Form.Group>
           </Col>
-          
+
           <Col xs={12} md={6} lg={2} className="d-flex align-items-end">
             <Button
               type="submit"
               variant="primary"
-              className="search-btn w-100 d-flex align-items-center justify-content-center gap-2 py-3 fs-6 rounded-3 fw-bold">
-              <i className="bi bi-search"></i> ค้นหา
+              className="search-btn w-100 d-flex align-items-center justify-content-center gap-2 py-3 fs-6 rounded-3 fw-bold"
+              disabled={loading}
+            >
+              {loading ? (
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              ) : (
+                <i className="bi bi-search"></i>
+              )}
+              <span>ค้นหา</span>
             </Button>
           </Col>
         </Row>
