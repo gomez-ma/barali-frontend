@@ -4,7 +4,7 @@ import Col from 'react-bootstrap/Col';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-const AccommodationCard = ({ accommodation }) => {
+const AccommodationCard = ({ accommodation, availabilityRooms }) => {
     const fullImageUrl = `${BASE_URL}/uploads/accommodations/${accommodation.image_name}`;
 
     // original_price และ discount (%) มีอยู่ใน accommodation
@@ -31,7 +31,7 @@ const AccommodationCard = ({ accommodation }) => {
                             {accommodation.name}
                             <small className="text-muted"> ({accommodation.type.name})</small>
                         </h5>
-                        <p className="mb-1">ห้องว่าง : {accommodation.total_rooms} {accommodation.room_type}</p>
+                        <p className="mb-1">ห้องว่าง : {availabilityRooms} ห้อง</p>
 
                         <ul className="list-unstyled mb-2">
                             <li>📐 ขนาดห้อง {accommodation.room_size} ตารางเมตร</li>

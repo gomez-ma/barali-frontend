@@ -10,7 +10,7 @@ import TypeService from '../../../services/api/accommodation/type.service';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import FormatToBE from '../../../utils/FormatToBE';
-import AvailabilityFetcher from '../../../components/common/AvailabilityFetcher';
+import GetRoomAvailability from '../../../components/common/GetRoomAvailability';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -112,10 +112,11 @@ const SearchPage = () => {
     applyAllFilters();
   }, [filters, originalResults]);
 
+  // Fetch availability data when checkInDate or checkOutDate changes
   useEffect(() => {
     const fetchData = async () => {
       if (checkInDate && checkOutDate) {
-        const result = await AvailabilityFetcher(checkInDate, checkOutDate);
+        const result = await GetRoomAvailability(checkInDate, checkOutDate);
         setAvailabilityData(result);
       }
     };
@@ -291,11 +292,11 @@ const SearchPage = () => {
                               <Card className="shadow-sm border-0" style={{ borderRadius: 12, background: '#f8fafd' }}>
                                 <Row className="g-0">
                                   <Col md={5} className="d-flex flex-column align-items-center justify-content-center">
-                                    <div style={{ width: '100%', height: 220, overflow: 'hidden', borderRadius: '12px 0 0 12px', background: '#f4f4f4' }}>
+                                    <div style={{ width: '100%', height: 280, overflow: 'hidden', borderRadius: '0 12px', background: '#f4f4f4' }}>
                                       <img
                                         src={acc.image_name ? `${BASE_URL}/uploads/accommodations/${acc.image_name}` : 'https://picsum.photos/id/57/2000/3000'}
                                         alt={acc.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover'}}
                                       />
                                     </div>
                                     <div className="mt-2 d-flex flex-wrap align-items-center justify-content-center" style={{ fontSize: '0.97em', color: '#666' }}>
@@ -327,13 +328,35 @@ const SearchPage = () => {
                                           </div>
                                           <div className="d-flex align-items-center justify-content-between mt-2">
                                             <DiscountedPrice accommodation={acc} />
-                                            <Button variant="success" style={{ minWidth: 100, borderRadius: 20 }}>จองเลย</Button>
+
+                                            {availabilityData[acc.id] !== undefined && availabilityData[acc.id] <= 0 ? (
+                                              <Button
+                                                variant="secondary"
+                                                disabled
+                                                style={{ minWidth: 100, borderRadius: 20 }}
+                                              >
+                                                ห้องเต็ม
+                                              </Button>
+                                            ) : (
+                                              <Button
+                                                variant="success"
+                                                style={{ minWidth: 100, borderRadius: 20 }}
+                                                onClick={""}
+                                              >
+                                                จองเลย
+                                              </Button>
+                                            )}
                                           </div>
-                                          {availabilityData[acc.id] !== undefined && (
+
+                                          {/* แสดง Badge เฉพาะเมื่อห้องว่างมากกว่า 0 */}
+                                          {availabilityData[acc.id] !== undefined && availabilityData[acc.id] > 0 && (
                                             <div className="mt-2">
-                                              <Badge bg="info" style={{ fontSize: '1em' }}>ห้องว่าง: {availabilityData[acc.id]} ห้อง</Badge>
+                                              <Badge bg="info" style={{ fontSize: '1em' }}>
+                                                ห้องว่าง: {availabilityData[acc.id]} ห้อง
+                                              </Badge>
                                             </div>
                                           )}
+
                                         </Card.Body>
                                       </Card>
                                     </Card.Body>

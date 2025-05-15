@@ -1,7 +1,7 @@
 import dayjs from 'dayjs';
 import AccommodationService from '../../services/api/accommodation/accommodation.service';
 
-const fetchAvailability = async (checkInDate, checkOutDate) => {
+const GetRooomAvailability = async (checkInDate, checkOutDate) => {
   try {
     const formattedCheckIn = dayjs(checkInDate).format('YYYY-MM-DD');
     const formattedCheckOut = dayjs(checkOutDate).format('YYYY-MM-DD');
@@ -34,4 +34,4 @@ const fetchAvailability = async (checkInDate, checkOutDate) => {
   }
 };
 
-export default fetchAvailability;
+export default GetRooomAvailability;
