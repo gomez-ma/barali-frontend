@@ -10,6 +10,9 @@ import TypeService from '../../../services/api/accommodation/type.service';
 import Slider from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import FormatToBE from '../../../utils/FormatToBE';
+import AvailabilityFetcher from '../../../components/common/AvailabilityFetcher';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
@@ -25,7 +28,8 @@ const SearchPage = () => {
     highRating: false,
     selectedTypes: [],
   });
-  const [expandedOffer, setExpandedOffer] = useState({});
+  // สร้าง ref เพื่อเก็บค่าวันที่เคยเรียกข้อมูลไปแล้ว
+  // const prevDatesRef = useRef({ checkIn: null, checkOut: null });
 
   const destination = searchParams.get('destination') || '';
   const checkIn = searchParams.get('checkIn') || '';
@@ -82,12 +86,6 @@ const SearchPage = () => {
   }, [searchParams, destination, checkIn, checkOut, guests]);
 
   useEffect(() => {
-    if (checkInDate && checkOutDate) {
-      fetchAvailability(checkInDate, checkOutDate);
-    }
-  }, [checkInDate, checkOutDate]);
-
-  useEffect(() => {
     const applyAllFilters = () => {
       const {
         priceRange,
@@ -114,24 +112,16 @@ const SearchPage = () => {
     applyAllFilters();
   }, [filters, originalResults]);
 
-  const fetchAvailability = async (checkInDate, checkOutDate) => {
-    try {
-      const res = await AccommodationService.getAvailability(
-        dayjs(checkInDate).format('YYYY-MM-DD'),
-        dayjs(checkOutDate).format('YYYY-MM-DD')
-      );
-      const availabilityItems = Array.isArray(res.data)
-        ? res.data
-        : res.data?.data || [];
-      const map = {};
-      availabilityItems.forEach(item => {
-        map[item.accommodationId] = item.availableRooms;
-      });
-      setAvailabilityData(map);
-    } catch (err) {
-      console.error('Error fetching availability:', err);
-    }
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      if (checkInDate && checkOutDate) {
+        const result = await AvailabilityFetcher(checkInDate, checkOutDate);
+        setAvailabilityData(result);
+      }
+    };
+
+    fetchData();
+  }, [checkInDate, checkOutDate]);
 
   const resetFilters = () => {
     setFilters({
@@ -169,29 +159,41 @@ const SearchPage = () => {
   const visibleResults = filteredResults.filter(matchesSearchTerm);
   const groupedVisibleResults = groupByType(visibleResults);
 
-  // Render benefits with expand/collapse
-  const renderBenefits = (benefits, accId, offerIdx) => {
-    if (!benefits) return null;
-    const key = `${accId}-${offerIdx}`;
-    const showAll = expandedOffer[key];
-    const shown = showAll ? benefits : benefits.slice(0, 2);
+  const getDiscountedPrice = (accommodation) => {
+    const originalPrice = accommodation.price_per_night;
+    const discountPercent = accommodation.discount;
+
+    if (typeof discountPercent === 'number' && discountPercent > 0) {
+      return Math.round(originalPrice * (1 - discountPercent / 100));
+    }
+
+    return originalPrice;
+  };
+
+  const DiscountedPrice = ({ accommodation }) => {
+    const originalPrice = accommodation.price_per_night;
+    const discountPercent = accommodation.discount;
+    const discounted = getDiscountedPrice(accommodation);
+
     return (
-      <>
-        {shown.map((b, i) => (
-          <span key={i} className="me-3" style={{ color: b.highlight ? '#388e3c' : '#333', fontWeight: b.highlight ? 600 : 400 }}>
-            {b.icon} {b.text}
-          </span>
-        ))}
-        {benefits.length > 2 && (
-          <span
-            className="text-primary"
-            style={{ cursor: 'pointer', fontSize: '0.95em' }}
-            onClick={() => setExpandedOffer(prev => ({ ...prev, [key]: !showAll }))}
-          >
-            {showAll ? '▲ ซ่อนรายละเอียด' : `+${benefits.length - 2} รายละเอียดเพิ่มเติม ▼`}
-          </span>
+      <div className="d-flex align-items-baseline mb-2">
+        {typeof discountPercent === 'number' && discountPercent > 0 && (
+          <>
+            <span className="text-decoration-line-through text-secondary me-2">
+              {originalPrice.toLocaleString()}
+            </span>
+            <span className="text-danger fw-bold me-3">
+              Save {discountPercent}%
+            </span>
+          </>
         )}
-      </>
+        <span
+          className={`h5 fw-bold ${discountPercent > 0 ? 'text-danger' : 'text-success'
+            }`}
+        >
+          {discounted.toLocaleString()} บาท
+        </span>
+      </div>
     );
   };
 
@@ -291,83 +293,49 @@ const SearchPage = () => {
                                   <Col md={5} className="d-flex flex-column align-items-center justify-content-center">
                                     <div style={{ width: '100%', height: 220, overflow: 'hidden', borderRadius: '12px 0 0 12px', background: '#f4f4f4' }}>
                                       <img
-                                        src={acc.images?.[0] || 'https://picsum.photos/id/57/2000/3000'}
+                                        src={acc.image_name ? `${BASE_URL}/uploads/accommodations/${acc.image_name}` : 'https://picsum.photos/id/57/2000/3000'}
                                         alt={acc.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
                                       />
                                     </div>
                                     <div className="mt-2 d-flex flex-wrap align-items-center justify-content-center" style={{ fontSize: '0.97em', color: '#666' }}>
-                                      <span className="me-3"><i className="bi bi-people"></i> {acc.maxGuests || 2} คน</span>
-                                      <span className="me-3"><i className="bi bi-aspect-ratio"></i> {acc.size || '47 m²'}</span>
+                                      <span className="me-3"><i className="bi bi-people"></i> {acc.capacity || 2} คน</span>
+                                      <span className="me-3"><i className="bi bi-aspect-ratio"></i> {acc.room_size || '47 m²'}</span>
                                       <span className="me-3"><i className="bi bi-wifi"></i></span>
                                       <span className="me-3"><i className="bi bi-cup-straw"></i></span>
-                                    </div>
-                                    <div>
-                                      <a href={acc.detailUrl || "#"} style={{ fontSize: '0.97em', color: '#1976d2', textDecoration: 'underline' }}>room details &amp; photos</a>
                                     </div>
                                   </Col>
                                   <Col md={7}>
                                     <Card.Body>
-                                      {/* <h5 className="fw-bold mb-2" style={{ color: '#222' }}>{acc.name}</h5>
-                                      <div className="mb-2" style={{ color: '#888', fontSize: '1em' }}>
-                                        {acc.type?.name}
-                                      </div> */}
-                                      {(acc.offers || [
-                                        {
-                                          name: 'SUMMER ESCAPE SAVE 62% (MIN 2 NIGHTS)',
-                                          save: 62,
-                                          price: acc.price_per_night ? Math.round(acc.price_per_night * 0.38) : 3040,
-                                          oldPrice: acc.price_per_night || 8000,
-                                          benefits: [
-                                            { icon: <i className="bi bi-cup-straw"></i>, text: 'Breakfast', highlight: false },
-                                            { icon: <i className="bi bi-wifi"></i>, text: 'Internet', highlight: false },
-                                            { icon: <i className="bi bi-check2"></i>, text: 'Amendable booking', highlight: true },
-                                          ],
-                                          bookingCondition: '100% advanced payment is required. If cancelled within 7 days prior to check-in date, 100 percent of total amount will be charged. No show, 100 percent of total amount will be charged.',
-                                          freeCancel: acc.freeCancellation,
-                                        }
-                                      ]).map((offer, idx) => (
-                                        <Card key={idx} className="mb-3 border-0" style={{ background: '#fff', borderRadius: 10, boxShadow: '0 1px 4px #e0e0e0' }}>
-                                          <Card.Body className="py-2 px-3">
-                                            <div className="d-flex align-items-center mb-1">
-                                              <span className="fw-bold" style={{ fontSize: '1.05em', color: '#222' }}>
-                                                <i className="bi bi-dot"></i> {offer.name}
-                                              </span>
-                                              <span className="ms-2" style={{ color: '#e57300', fontWeight: 600 }}>
-                                                Save {offer.save}%
-                                              </span>
+                                      <Card key={acc.id} className="mb-3 border-0" style={{ background: '#fff', borderRadius: 10, boxShadow: '0 1px 4px #e0e0e0' }}>
+                                        <Card.Body className="py-2 px-3">
+                                          <div className="d-flex align-items-center mb-1">
+                                            <span className="fw-bold" style={{ fontSize: '1.05em', color: '#222' }}>
+                                              {acc.name}
+                                            </span>
+                                          </div>
+                                          <div className="mb-1" style={{ fontSize: '0.98em' }}>
+                                            <ul className='list-unstyled'>
+                                              {acc.amenities.split(",").map((amenity, index) => (
+                                                <li key={index}>{amenity.trim()}</li>
+                                              ))}
+                                            </ul>
+                                          </div>
+                                          <div className="mb-1" style={{ fontSize: '0.93em' }}>
+                                            <span className="fw-bold text-decoration-underline">Booking Condition</span> <br />
+                                            <span>{acc.description}</span>
+                                          </div>
+                                          <div className="d-flex align-items-center justify-content-between mt-2">
+                                            <DiscountedPrice accommodation={acc} />
+                                            <Button variant="success" style={{ minWidth: 100, borderRadius: 20 }}>จองเลย</Button>
+                                          </div>
+                                          {availabilityData[acc.id] !== undefined && (
+                                            <div className="mt-2">
+                                              <Badge bg="info" style={{ fontSize: '1em' }}>ห้องว่าง: {availabilityData[acc.id]} ห้อง</Badge>
                                             </div>
-                                            <div className="mb-1" style={{ fontSize: '0.98em' }}>
-                                              {renderBenefits(offer.benefits, acc.id, idx)}
-                                            </div>
-                                            <div className="mb-1" style={{ color: '#4caf50', fontSize: '0.97em' }}>
-                                              {offer.freeCancel && <span>✓ ยกเลิกฟรี </span>}
-                                              {offer.benefits.some(b => b.highlight) && <span>✓ Amendable booking</span>}
-                                            </div>
-                                            <div className="mb-1" style={{ fontSize: '0.93em' }}>
-                                              <span className="fw-bold text-decoration-underline">Booking Condition</span> <br />
-                                              <span>{offer.bookingCondition}</span>
-                                            </div>
-                                            <div className="d-flex align-items-center justify-content-between mt-2">
-                                              <div>
-                                                <span className="text-muted text-decoration-line-through me-2" style={{ fontSize: '1em' }}>
-                                                  {formatPrice(offer.oldPrice)}
-                                                </span>
-                                                <span className="fw-bold" style={{ color: '#388e3c', fontSize: '1.3em' }}>
-                                                  {formatPrice(offer.price)}
-                                                </span>
-                                                <span className="ms-1" style={{ fontSize: '0.95em', color: '#888' }}>/ คืน</span>
-                                              </div>
-                                              <Button variant="success" style={{ minWidth: 100, borderRadius: 20 }}>จองเลย</Button>
-                                            </div>
-                                          </Card.Body>
-                                        </Card>
-                                      ))}
-                                      {availabilityData[acc.id] !== undefined && (
-                                        <div className="mt-2">
-                                          <Badge bg="info" style={{ fontSize: '1em' }}>ห้องว่าง: {availabilityData[acc.id]} ห้อง</Badge>
-                                        </div>
-                                      )}
+                                          )}
+                                        </Card.Body>
+                                      </Card>
                                     </Card.Body>
                                   </Col>
                                 </Row>

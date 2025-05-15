@@ -7,10 +7,11 @@ import 'react-datepicker/dist/react-datepicker.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/th';
 import th from 'date-fns/locale/th';
+import TypeService from '../../services/api/accommodation/type.service';
 
 registerLocale('th', th);
 
-const SearchBox = ({resetFilter}) => {
+const SearchBox = ({ resetFilter }) => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -19,6 +20,10 @@ const SearchBox = ({resetFilter}) => {
   const [loading, setLoading] = useState(false);
   const [destination, setDestination] = useState('');
   const [guests, setGuests] = useState(1);
+
+  const [types, setTypes] = useState([]);
+  const [showTypeDropdown, setShowTypeDropdown] = useState(false);
+  const [selectedType, setSelectedType] = useState('');
 
   const today = new Date();
 
@@ -43,6 +48,30 @@ const SearchBox = ({resetFilter}) => {
       setCheckOutDate(dayjs().add(2, 'day').toDate());
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const fetchTypes = async () => {
+      try {
+        const response = await TypeService.getAll();
+        setTypes(response.data);
+      } catch (error) {
+        console.error("Failed to load types:", error);
+      }
+    };
+
+    fetchTypes();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest('.dropdown-container-type')) {
+        setShowTypeDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -72,11 +101,21 @@ const SearchBox = ({resetFilter}) => {
     setCheckOutDate(date);
   };
 
-  // Create a wrapper component for the check-in date input
+  const handleTypeSelect = (typeName) => {
+    setSelectedType(typeName);
+    setDestination(typeName);
+    setShowTypeDropdown(false);
+  };
+
+  const handleDestinationChange = (e) => {
+    setDestination(e.target.value);
+    setSelectedType('');
+  };
+
   const CheckInDateInput = ({ value, onClick, placeholder, disabled }) => (
     <InputGroup className="custom-datepicker" onClick={onClick}>
-      <InputGroup.Text className="bg-white border-end-0" id="checkin-date-addon">
-        <i className="bi bi-calendar text-primary"></i>
+      <InputGroup.Text className="bg-white border-end-0">
+        <i className="bi bi-calendar-event text-primary"></i>
       </InputGroup.Text>
       <FormControl
         placeholder={placeholder}
@@ -84,19 +123,14 @@ const SearchBox = ({resetFilter}) => {
         readOnly
         disabled={disabled}
         className="py-3 fs-6 border-start-0 shadow-sm"
-        id="checkin-date"
-        name="checkinDate"
-        autoComplete="check-in-date"
-        aria-labelledby="checkin-date-addon"
       />
     </InputGroup>
   );
 
-  // Create a separate wrapper component for the check-out date input
   const CheckOutDateInput = ({ value, onClick, placeholder, disabled }) => (
     <InputGroup className="custom-datepicker" onClick={onClick}>
-      <InputGroup.Text className="bg-white border-end-0" id="checkout-date-addon">
-        <i className="bi bi-calendar text-primary"></i>
+      <InputGroup.Text className="bg-white border-end-0">
+        <i className="bi bi-calendar-event text-primary"></i>
       </InputGroup.Text>
       <FormControl
         placeholder={placeholder}
@@ -104,47 +138,58 @@ const SearchBox = ({resetFilter}) => {
         readOnly
         disabled={disabled}
         className="py-3 fs-6 border-start-0 shadow-sm"
-        id="checkout-date"
-        name="checkoutDate"
-        autoComplete="check-out-date"
-        aria-labelledby="checkout-date-addon"
       />
     </InputGroup>
   );
 
   return (
     <div className="search-container bg-white p-4 rounded-4 shadow-lg mb-4 mt-4">
-      <Form onSubmit={handleSearch} id="room-search-form" name="roomSearchForm">
+      <Form onSubmit={handleSearch}>
         <Row className="align-items-end g-3">
           <Col xs={12} md={6} lg={4}>
-            <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="destination">
+            <Form.Group className="position-relative dropdown-container-type">
+              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
                 ประเภทห้องพัก
               </Form.Label>
               <InputGroup>
-                <InputGroup.Text className="bg-white border-end-0" id="destination-addon">
+                <InputGroup.Text className="bg-white border-end-0">
                   <i className="bi bi-search text-muted"></i>
                 </InputGroup.Text>
                 <FormControl
                   type="text"
-                  placeholder="ใส่ประเภทห้องพัก"
+                  placeholder="ค้นหาประเภท ชื่อห้องพัก เมือง หรือจังหวัด"
                   value={destination}
-                  onChange={(e) => setDestination(e.target.value)}
+                  onChange={handleDestinationChange}
+                  onClick={() => setShowTypeDropdown(true)}
                   className="py-3 fs-6 border-start-0"
-                  id="destination"
-                  name="destination"
                   autoComplete="off"
-                  aria-labelledby="destination-addon"
                 />
               </InputGroup>
+
+              {showTypeDropdown && types.length > 0 && (
+                <div
+                  className="position-absolute w-100 bg-white border rounded mt-1 shadow-sm"
+                  style={{ zIndex: 1000, maxHeight: '250px', overflowY: 'auto' }}
+                >
+                  {types.map((type, idx) => (
+                    <div
+                      key={idx}
+                      className={`p-2 border-bottom hover-bg-light ${selectedType === type.name ? 'bg-light' : ''}`}
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => handleTypeSelect(type.name)}
+                    >
+                      <i className="bi bi-arrow-right-short me-2 text-primary"></i>
+                      {type.name}
+                    </div>
+                  ))}
+                </div>
+              )}
             </Form.Group>
           </Col>
 
           <Col xs={12} sm={6} md={3} lg={3}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="checkin-date">
-                เช็คอิน
-              </Form.Label>
+              <Form.Label className="mb-2 fw-semibold text-secondary">เช็คอิน</Form.Label>
               <DatePicker
                 selected={checkInDate}
                 onChange={handleCheckInDateChange}
@@ -155,7 +200,7 @@ const SearchBox = ({resetFilter}) => {
                 dateFormat="dd/MM/yyyy"
                 placeholderText="เลือกวันที่"
                 locale="th"
-                customInput={CheckInDateInput({placeholder: formatToBE(checkInDate) || "เลือกวันที่"})}
+                customInput={CheckInDateInput({ placeholder: formatToBE(checkInDate) })}
                 popperPlacement="bottom-start"
               />
             </Form.Group>
@@ -163,9 +208,7 @@ const SearchBox = ({resetFilter}) => {
 
           <Col xs={12} sm={6} md={3} lg={3}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="checkout-date">
-                เช็คเอาท์
-              </Form.Label>
+              <Form.Label className="mb-2 fw-semibold text-secondary">เช็คเอาท์</Form.Label>
               <DatePicker
                 selected={checkOutDate}
                 onChange={handleCheckOutDateChange}
@@ -185,20 +228,15 @@ const SearchBox = ({resetFilter}) => {
 
           <Col xs={12} md={6} lg={2}>
             <Form.Group>
-              <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2" htmlFor="guests">
-                ผู้เข้าพัก
-              </Form.Label>
+              <Form.Label className="mb-2 fw-semibold text-secondary">ผู้เข้าพัก</Form.Label>
               <InputGroup>
-                <InputGroup.Text className="bg-white border-end-0" id="guests-addon">
+                <InputGroup.Text className="bg-white border-end-0">
                   <i className="bi bi-person text-muted"></i>
                 </InputGroup.Text>
                 <Form.Select
                   className="py-3 fs-6 border-start-0"
                   value={guests}
                   onChange={(e) => setGuests(parseInt(e.target.value))}
-                  id="guests"
-                  name="guests"
-                  aria-labelledby="guests-addon"
                 >
                   <option value={1}>1 ผู้ใหญ่</option>
                   <option value={2}>2 ผู้ใหญ่</option>
@@ -215,8 +253,6 @@ const SearchBox = ({resetFilter}) => {
               variant="primary"
               className="w-100 d-flex align-items-center justify-content-center gap-2 py-3 fs-6 rounded-3 fw-bold"
               disabled={loading}
-              id="search-button"
-              name="searchButton"
               onClick={resetFilter}
             >
               {loading ? (
