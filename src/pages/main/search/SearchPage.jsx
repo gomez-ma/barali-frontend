@@ -67,7 +67,7 @@ const SearchPage = () => {
   }, []);
 
   useEffect(() => {
-    document.title = `ผลการค้นหาที่พัก | ${destination || 'ทุกประเภทห้องพัก'}`;
+    document.title = `ผลการค้นหา - ${destination || 'ทุกประเภทห้องพัก'} | บาราลี รีสอร์ท เกาะช้าง`;
     const fetchSearchResults = async () => {
       setLoading(true);
       try {

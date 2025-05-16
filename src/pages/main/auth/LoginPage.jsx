@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../../services/auth/auth.service';
 // เราสามารถนำเข้าไอคอนโดยตรงจาก react-bootstrap-icons (หากติดตั้งแล้ว)
@@ -12,6 +12,10 @@ const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState('');
+
+  useEffect(() => {
+    document.title = "เข้าสู่ระบบ | บาราลี รีสอร์ท เกาะช้าง";
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

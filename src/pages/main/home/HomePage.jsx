@@ -9,6 +9,7 @@ const HomePage = () => {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
 
   useEffect(() => {
+    document.title = "บาราลี รีสอร์ท เกาะช้าง | Barali Beach Resort Koh Chang";
     const handleResize = () => setIsDesktop(window.innerWidth >= 768);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
