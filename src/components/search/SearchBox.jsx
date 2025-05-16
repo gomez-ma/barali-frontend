@@ -118,6 +118,8 @@ const SearchBox = ({ resetFilter }) => {
         <i className="bi bi-calendar-event text-primary"></i>
       </InputGroup.Text>
       <FormControl
+        name='checkIn'
+        id='checkIn'
         placeholder={placeholder}
         value={value}
         readOnly
@@ -133,6 +135,8 @@ const SearchBox = ({ resetFilter }) => {
         <i className="bi bi-calendar-event text-primary"></i>
       </InputGroup.Text>
       <FormControl
+        name='checkOut'
+        id='checkOut'
         placeholder={placeholder}
         value={value}
         readOnly
@@ -156,6 +160,8 @@ const SearchBox = ({ resetFilter }) => {
                   <i className="bi bi-search text-muted"></i>
                 </InputGroup.Text>
                 <FormControl
+                  name="destination"
+                  id="destination"
                   type="text"
                   placeholder="ค้นหาประเภท ชื่อห้องพัก เมือง หรือจังหวัด"
                   value={destination}
@@ -234,6 +240,8 @@ const SearchBox = ({ resetFilter }) => {
                   <i className="bi bi-person text-muted"></i>
                 </InputGroup.Text>
                 <Form.Select
+                  name="guests"
+                  id="guests"
                   className="py-3 fs-6 border-start-0"
                   value={guests}
                   onChange={(e) => setGuests(parseInt(e.target.value))}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Form, Accordion, Badge } from 'react-bootstrap';
 import dayjs from 'dayjs';
 import 'dayjs/locale/th';
@@ -16,6 +16,7 @@ const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const SearchPage = () => {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [originalResults, setOriginalResults] = useState([]);
@@ -36,8 +37,8 @@ const SearchPage = () => {
   const checkOut = searchParams.get('checkOut') || '';
   const guests = searchParams.get('guests') || 1;
 
-  const checkInDate = checkIn ? dayjs(checkIn).toDate() : null;
-  const checkOutDate = checkOut ? dayjs(checkOut).toDate() : null;
+  const checkInDate = checkIn ? dayjs(checkIn).format('YYYY-MM-DD') : null;
+  const checkOutDate = checkOut ? dayjs(checkOut).format('YYYY-MM-DD') : null;
 
   // Group accommodations by type
   const groupByType = (accommodations) => {
@@ -66,12 +67,12 @@ const SearchPage = () => {
   }, []);
 
   useEffect(() => {
-    document.title = `Barali Beach Resort`;
+    document.title = `ผลการค้นหาที่พัก | ${destination || 'ทุกประเภทห้องพัก'}`;
     const fetchSearchResults = async () => {
       setLoading(true);
       try {
         const res = destination
-          ? await AccommodationService.getSearch(destination, checkIn, checkOut, guests)
+          ? await AccommodationService.getSearch(destination, checkInDate, checkOutDate, guests)
           : await AccommodationService.getAll();
         const results = res?.data || [];
         setOriginalResults(results);
@@ -83,7 +84,7 @@ const SearchPage = () => {
       }
     };
     fetchSearchResults();
-  }, [searchParams, destination, checkIn, checkOut, guests]);
+  }, [searchParams, destination, checkInDate, checkOutDate, guests]);
 
   useEffect(() => {
     const applyAllFilters = () => {
@@ -184,7 +185,7 @@ const SearchPage = () => {
               {originalPrice.toLocaleString()}
             </span>
             <span className="text-danger fw-bold me-3">
-              Save {discountPercent}%
+              ประหยัด {discountPercent}%
             </span>
           </>
         )}
@@ -252,7 +253,7 @@ const SearchPage = () => {
               <Form.Check
                 id="highRating"
                 type="checkbox"
-                label="คะแนนสูง (8+)"
+                label="คะแนนสูง (4 ดาวขึ้นไป)"
                 checked={filters.highRating}
                 onChange={(e) => setFilters(prev => ({ ...prev, highRating: e.target.checked }))}
               />
@@ -296,7 +297,7 @@ const SearchPage = () => {
                                       <img
                                         src={acc.image_name ? `${BASE_URL}/uploads/accommodations/${acc.image_name}` : 'https://picsum.photos/id/57/2000/3000'}
                                         alt={acc.name}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover'}}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                       />
                                     </div>
                                     <div className="mt-2 d-flex flex-wrap align-items-center justify-content-center" style={{ fontSize: '0.97em', color: '#666' }}>
@@ -341,7 +342,7 @@ const SearchPage = () => {
                                               <Button
                                                 variant="success"
                                                 style={{ minWidth: 100, borderRadius: 20 }}
-                                                onClick={""}
+                                                onClick={() => navigate(`/booking/${acc.id}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`)}
                                               >
                                                 จองเลย
                                               </Button>

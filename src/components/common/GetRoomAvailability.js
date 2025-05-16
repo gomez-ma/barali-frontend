@@ -1,19 +1,15 @@
-import dayjs from 'dayjs';
 import AccommodationService from '../../services/api/accommodation/accommodation.service';
 
 const GetRooomAvailability = async (checkInDate, checkOutDate) => {
   try {
-    const formattedCheckIn = dayjs(checkInDate).format('YYYY-MM-DD');
-    const formattedCheckOut = dayjs(checkOutDate).format('YYYY-MM-DD');
-
-    if (!formattedCheckIn || !formattedCheckOut) {
+    if (!checkInDate || !checkOutDate) {
       console.error('Invalid dates');
       return {};
     }
 
     const res = await AccommodationService.getAvailability(
-      formattedCheckIn,
-      formattedCheckOut
+      checkInDate, 
+      checkOutDate
     );
 
     const data = Array.isArray(res.data)
