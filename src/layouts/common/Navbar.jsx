@@ -14,10 +14,8 @@ const MainNavbar = ({ isUser, logOut }) => {
                     <img
                         src="./logo.png"
                         alt="Barali Beach Resort Koh Chang"
-                        style={{ height: '60px', width: 'auto', objectFit: 'contain' }}
-                        className="d-inline-block align-text-center"
+                        className="logo d-inline-block align-text-center"
                     />
-                    {' '}
                 </Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
