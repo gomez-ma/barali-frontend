@@ -29,16 +29,11 @@ const SearchPage = () => {
     highRating: false,
     selectedTypes: [],
   });
-  // สร้าง ref เพื่อเก็บค่าวันที่เคยเรียกข้อมูลไปแล้ว
-  // const prevDatesRef = useRef({ checkIn: null, checkOut: null });
 
   const destination = searchParams.get('destination') || '';
-  const checkIn = searchParams.get('checkIn') || '';
-  const checkOut = searchParams.get('checkOut') || '';
+  const checkInDate = searchParams.get('checkIn') || dayjs().add(1, 'day').format('YYYY-MM-DD');
+  const checkOutDate = searchParams.get('checkOut') || dayjs().add(2, 'day').format('YYYY-MM-DD');
   const guests = searchParams.get('guests') || 1;
-
-  const checkInDate = checkIn ? dayjs(checkIn).format('YYYY-MM-DD') : null;
-  const checkOutDate = checkOut ? dayjs(checkOut).format('YYYY-MM-DD') : null;
 
   // Group accommodations by type
   const groupByType = (accommodations) => {
@@ -268,8 +263,8 @@ const SearchPage = () => {
             <h5 className='fw-bold mb-3'>ผลการค้นหาใน{destination ? `"${destination}"` : 'ทุกประเภทห้องพัก'}</h5>
             <div className="mb-2" style={{ color: '#888', fontSize: '1em' }}>
               <span className="me-3">ค้นหา: <b>{destination || 'ไม่ระบุ'}</b></span>
-              <span className="me-3">เช็คอิน: <b>{FormatToBE(checkIn) || 'ไม่ระบุ'}</b></span>
-              <span className="me-3">เช็คเอาท์: <b>{FormatToBE(checkOut) || 'ไม่ระบุ'}</b></span>
+              <span className="me-3">เช็คอิน: <b>{FormatToBE(checkInDate) || 'ไม่ระบุ'}</b></span>
+              <span className="me-3">เช็คเอาท์: <b>{FormatToBE(checkOutDate) || 'ไม่ระบุ'}</b></span>
               <span>จำนวนผู้เข้าพัก: <b>{guests}</b></span>
             </div>
             {loading ? (
@@ -342,7 +337,7 @@ const SearchPage = () => {
                                               <Button
                                                 variant="success"
                                                 style={{ minWidth: 100, borderRadius: 20 }}
-                                                onClick={() => navigate(`/booking/${acc.id}?checkIn=${checkIn}&checkOut=${checkOut}&guests=${guests}`)}
+                                                onClick={() => navigate(`/booking/${acc.id}?checkIn=${checkInDate}&checkOut=${checkOutDate}&guests=${guests}`)}
                                               >
                                                 จองเลย
                                               </Button>
