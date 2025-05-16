@@ -264,9 +264,9 @@ const SearchPage = () => {
         </Col>
         <Col lg={9}>
           <Card className='p-3 shadow-sm border-0' style={{ background: '#fff' }}>
-            <h5 className='fw-bold mb-3'>ผลการค้นหาใน {destination ? `"${destination}"` : 'ทุกจุดหมายปลายทาง'}</h5>
+            <h5 className='fw-bold mb-3'>ผลการค้นหาใน{destination ? `"${destination}"` : 'ทุกประเภทห้องพัก'}</h5>
             <div className="mb-2" style={{ color: '#888', fontSize: '1em' }}>
-              <span className="me-3">ปลายทาง: <b>{destination || 'ไม่ระบุ'}</b></span>
+              <span className="me-3">ค้นหา: <b>{destination || 'ไม่ระบุ'}</b></span>
               <span className="me-3">เช็คอิน: <b>{FormatToBE(checkIn) || 'ไม่ระบุ'}</b></span>
               <span className="me-3">เช็คเอาท์: <b>{FormatToBE(checkOut) || 'ไม่ระบุ'}</b></span>
               <span>จำนวนผู้เข้าพัก: <b>{guests}</b></span>

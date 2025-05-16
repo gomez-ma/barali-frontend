@@ -149,7 +149,7 @@ const SearchBox = ({ resetFilter }) => {
           <Col xs={12} md={6} lg={4}>
             <Form.Group className="position-relative dropdown-container-type">
               <Form.Label className="mb-2 fw-semibold text-secondary d-flex align-items-center gap-2">
-                ประเภทห้องพัก
+                ค้นหา
               </Form.Label>
               <InputGroup>
                 <InputGroup.Text className="bg-white border-end-0">
