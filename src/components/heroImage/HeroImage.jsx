@@ -1,6 +1,6 @@
 import { Carousel } from 'react-bootstrap';
 import { useEffect, useState } from 'react';
-import '../../css/HeroImage.css';
+import './HeroImage.css';
 
 const HeroImage = () => {
     const BASE_URL = import.meta.env.VITE_BASE_URL;

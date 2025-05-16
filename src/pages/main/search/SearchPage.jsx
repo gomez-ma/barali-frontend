@@ -287,7 +287,7 @@ const SearchPage = () => {
                             <Col key={acc.id} xs={12} className="mb-4">
                               <Card className="shadow-sm border-0" style={{ borderRadius: 12, background: '#f8fafd' }}>
                                 <Row className="g-0">
-                                  <Col md={5} className="d-flex flex-column align-items-center justify-content-center">
+                                  <Col md={5} className="d-flex flex-column align-items-center mt-3">
                                     <div style={{ width: '100%', height: 280, overflow: 'hidden', borderRadius: '0 12px', background: '#f4f4f4' }}>
                                       <img
                                         src={acc.image_name ? `${BASE_URL}/uploads/accommodations/${acc.image_name}` : 'https://picsum.photos/id/57/2000/3000'}
